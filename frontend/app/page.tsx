@@ -175,7 +175,9 @@ export default function Home() {
               </div>
               <span className="text-xl font-bold">TimeLock</span>
             </div>
-            <ConnectButton />
+            <div className="ml-auto">
+              <ConnectButton />
+            </div>
           </div>
         </div>
       </nav>
