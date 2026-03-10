@@ -1,11 +1,6 @@
 # Dependencies
 node_modules/
 
-# Build outputs
-.next/
-out/
-build/
-dist/
 
 # Environment variables (sensitive)
 .env
