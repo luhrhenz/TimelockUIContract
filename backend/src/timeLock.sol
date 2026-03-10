@@ -10,6 +10,7 @@ contract TimelockSavings {
     }
 
     mapping(address => Vault) public vaults;
+    uint256 public totalActiveVaults;
 
     event Deposited(address user, uint256 amount, uint256 unlockTime);
     event Withdrawn(address user, uint256 amount);
@@ -23,6 +24,8 @@ contract TimelockSavings {
             unlockTime: unlockTime,
             active: true
         });
+
+        totalActiveVaults++;
 
         emit Deposited(msg.sender, msg.value, unlockTime);
     }
@@ -38,6 +41,8 @@ contract TimelockSavings {
 
         v.amount = 0;
         v.active = false;
+
+        totalActiveVaults--;
 
         (bool success, ) = payable(msg.sender).call{value: amount}("");
         require(success, "Transfer failed");

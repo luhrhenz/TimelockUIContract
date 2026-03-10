@@ -40,6 +40,13 @@ export const CONTRACT_ABI = [
     ],
   },
   {
+    type: 'function',
+    name: 'totalActiveVaults',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
     type: 'event',
     name: 'Deposited',
     inputs: [

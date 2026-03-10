@@ -23,6 +23,18 @@ export default function Home() {
     },
   });
 
+  // Read total active vaults count
+  const { data: totalVaultsData } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: "totalActiveVaults",
+    query: {
+      enabled: true,
+    },
+  });
+
+  const totalActiveVaults = totalVaultsData ? Number(totalVaultsData) : 0;
+
   const { writeContract: deposit, data: depositHash } = useWriteContract();
   const { writeContract: withdraw, data: withdrawHash } = useWriteContract();
 
@@ -350,7 +362,7 @@ export default function Home() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Active Vaults</span>
-                    <span className="font-semibold">0</span>
+                    <span className="font-semibold">{totalActiveVaults}</span>
                   </div>
                 </div>
               </div>
