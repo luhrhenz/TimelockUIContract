@@ -175,10 +175,7 @@ export default function Home() {
               </div>
               <span className="text-xl font-bold">TimeLock</span>
             </div>
-            <div className="flex-1 flex justify-center">
-              <ConnectButton />
-            </div>
-            <div className="w-[100px]"></div>
+            <ConnectButton />
           </div>
         </div>
       </nav>
@@ -220,23 +217,6 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Debug: Show vault data */}
-            {isConnected && vaultData && (
-              <div className="lg:col-span-3 bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-4">
-                <div className="flex justify-between items-center">
-                  <p className="text-yellow-400 text-sm font-mono">
-                    Debug: Amount={String(vaultData[0])}, UnlockTime={String(vaultData[1])}, Active={String(vaultData[2])}
-                  </p>
-                  <button 
-                    onClick={() => { refetchVault(); refetchTotalVaults(); }}
-                    className="text-xs bg-yellow-500/30 px-3 py-1 rounded hover:bg-yellow-500/50"
-                  >
-                    Refresh
-                  </button>
-                </div>
-              </div>
-            )}
-            
             {/* Main Vault Card */}
             <div className="lg:col-span-2 space-y-6">
               {vault && vault.active ? (
