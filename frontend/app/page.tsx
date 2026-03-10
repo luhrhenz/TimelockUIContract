@@ -214,7 +214,9 @@ export default function Home() {
               <p className="text-gray-400 mb-8">
                 Secure your Ethereum and earn rewards. Connect your wallet to get started.
               </p>
-              <ConnectButton showBalance={false} />
+              <div className="flex justify-center">
+                <ConnectButton showBalance={false} />
+              </div>
             </div>
           </div>
         ) : (
