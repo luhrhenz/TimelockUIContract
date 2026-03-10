@@ -61,6 +61,15 @@ export default function Home() {
     }
   }, [vault, depositTimestamp]);
 
+  // Force re-render every minute to update progress bar
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
   // Refetch vault when wallet connects
   useEffect(() => {
     if (isConnected && address) {
@@ -89,13 +98,13 @@ export default function Home() {
     });
   };
 
-  const isUnlocked = vault && vault.active && Date.now() / 1000 >= vault.unlockTime;
+  const isUnlocked = vault && vault.active && now / 1000 >= vault.unlockTime;
   const isLoading = isDepositLoading || isWithdrawLoading;
 
   // Calculate time remaining and progress
   const getTimeRemaining = () => {
     if (!vault || !vault.active) return null;
-    const remaining = vault.unlockTime * 1000 - Date.now();
+    const remaining = vault.unlockTime * 1000 - now;
     if (remaining <= 0) return { days: 0, hours: 0, minutes: 0 };
     const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
     const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -106,10 +115,10 @@ export default function Home() {
   // Calculate progress percentage
   const getProgress = () => {
     if (!vault || !vault.active || vault.unlockTime === 0) return 0;
-    const now = Math.floor(Date.now() / 1000);
+    const currentTime = Math.floor(now / 1000);
     const totalLockPeriod = vault.unlockTime - depositTimestamp;
     if (totalLockPeriod <= 0) return 100;
-    const elapsed = now - depositTimestamp;
+    const elapsed = currentTime - depositTimestamp;
     const progress = (elapsed / totalLockPeriod) * 100;
     return Math.min(100, Math.max(0, progress));
   };
