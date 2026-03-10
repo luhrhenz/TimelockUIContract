@@ -10,6 +10,7 @@ export default function Home() {
   const { address, isConnected } = useAccount();
   const [depositAmount, setDepositAmount] = useState("");
   const [lockDays, setLockDays] = useState("7");
+  const [depositTimestamp, setDepositTimestamp] = useState<number>(0);
 
   const { data: vaultData, refetch: refetchVault } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -38,6 +39,27 @@ export default function Home() {
     }
   }, [isDepositSuccess, isWithdrawSuccess, refetchVault]);
 
+  // Store deposit timestamp when vault data loads
+  useEffect(() => {
+    if (vault && vault.active && vault.unlockTime > 0 && depositTimestamp === 0) {
+      // Estimate deposit time based on unlock time and typical lock period
+      // This is a fallback - ideally we'd store this when depositing
+      const now = Math.floor(Date.now() / 1000);
+      const remaining = vault.unlockTime - now;
+      if (remaining > 0) {
+        // Assume typical lock period of 7 days if we can't determine
+        setDepositTimestamp(vault.unlockTime - (7 * 24 * 60 * 60));
+      }
+    }
+  }, [vault, depositTimestamp]);
+
+  // Refetch vault when wallet connects
+  useEffect(() => {
+    if (isConnected && address) {
+      refetchVault();
+    }
+  }, [isConnected, address, refetchVault]);
+
   const vault = vaultData
     ? {
         amount: formatEther(vaultData[0]),
@@ -49,6 +71,7 @@ export default function Home() {
   const handleDeposit = () => {
     if (!depositAmount) return;
     const unlockTime = Math.floor(Date.now() / 1000) + Number(lockDays) * 86400;
+    setDepositTimestamp(Math.floor(Date.now() / 1000));
     deposit({
       address: CONTRACT_ADDRESS,
       abi: CONTRACT_ABI,
@@ -69,7 +92,7 @@ export default function Home() {
   const isUnlocked = vault && vault.active && Date.now() / 1000 >= vault.unlockTime;
   const isLoading = isDepositLoading || isWithdrawLoading;
 
-  // Calculate time remaining
+  // Calculate time remaining and progress
   const getTimeRemaining = () => {
     if (!vault || !vault.active) return null;
     const remaining = vault.unlockTime * 1000 - Date.now();
@@ -78,6 +101,17 @@ export default function Home() {
     const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
     return { days, hours, minutes };
+  };
+
+  // Calculate progress percentage
+  const getProgress = () => {
+    if (!vault || !vault.active || vault.unlockTime === 0) return 0;
+    const now = Math.floor(Date.now() / 1000);
+    const totalLockPeriod = vault.unlockTime - depositTimestamp;
+    if (totalLockPeriod <= 0) return 100;
+    const elapsed = now - depositTimestamp;
+    const progress = (elapsed / totalLockPeriod) * 100;
+    return Math.min(100, Math.max(0, progress));
   };
   const timeRemaining = getTimeRemaining();
 
@@ -187,7 +221,7 @@ export default function Home() {
                       <div className="h-2 bg-[#1a1a2e] rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-blue-600 rounded-full transition-all duration-500"
-                          style={{ width: isUnlocked ? '100%' : '30%' }}
+                          style={{ width: isUnlocked ? '100%' : `${getProgress()}%` }}
                         />
                       </div>
                     </div>
