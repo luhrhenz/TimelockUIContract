@@ -9,7 +9,7 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/config";
 export default function Home() {
   const { address, isConnected } = useAccount();
   const [depositAmount, setDepositAmount] = useState("");
-  const [lockDays, setLockDays] = useState("1");
+  const [lockDays, setLockDays] = useState("7");
 
   const { data: vaultData, refetch: refetchVault } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -69,224 +69,269 @@ export default function Home() {
   const isUnlocked = vault && vault.active && Date.now() / 1000 >= vault.unlockTime;
   const isLoading = isDepositLoading || isWithdrawLoading;
 
+  // Calculate time remaining
+  const getTimeRemaining = () => {
+    if (!vault || !vault.active) return null;
+    const remaining = vault.unlockTime * 1000 - Date.now();
+    if (remaining <= 0) return { days: 0, hours: 0, minutes: 0 };
+    const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    return { days, hours, minutes };
+  };
+  const timeRemaining = getTimeRemaining();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900 p-4 sm:p-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-          <div className="text-center sm:text-left">
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-lg">
-              🔐 TimeLock
-            </h1>
-            <p className="text-purple-200 dark:text-purple-300 mt-1 font-medium">
-              Secure Your ETH • Earn Rewards
-            </p>
-          </div>
-          <div className="bg-white/20 backdrop-blur-lg rounded-full p-1">
+    <div className="min-h-screen bg-[#0a0a0f] text-white">
+      {/* Navigation */}
+      <nav className="border-b border-[#1f1f2e] bg-[#0d0d14]/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <span className="text-xl font-bold">TimeLock</span>
+            </div>
             <ConnectButton />
           </div>
         </div>
+      </nav>
 
-        {/* Main Card */}
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!isConnected ? (
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-12 text-center">
-            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-5xl">🦊</span>
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-4">Welcome to TimeLock!</h2>
-            <p className="text-purple-100 text-lg mb-6">
-              Connect your wallet to start locking your ETH and earning secure returns.
-            </p>
-            <div className="inline-block bg-gradient-to-r from-pink-500 to-violet-500 rounded-full px-8 py-3 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="text-center max-w-md">
+              <div className="w-16 h-16 mx-auto mb-6 bg-[#1a1a2e] rounded-2xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h1 className="text-3xl font-bold mb-4">Lock Your ETH</h1>
+              <p className="text-gray-400 mb-8">
+                Secure your Ethereum and earn rewards. Connect your wallet to get started.
+              </p>
               <ConnectButton showBalance={false} />
-            </div>
-            
-            {/* Features */}
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white/10 rounded-2xl p-4">
-                <div className="text-3xl mb-2">🔒</div>
-                <p className="text-white font-semibold">Secure</p>
-                <p className="text-purple-200 text-sm">Bank-grade security</p>
-              </div>
-              <div className="bg-white/10 rounded-2xl p-4">
-                <div className="text-3xl mb-2">⚡</div>
-                <p className="text-white font-semibold">Fast</p>
-                <p className="text-purple-200 text-sm">Instant deposits</p>
-              </div>
-              <div className="bg-white/10 rounded-2xl p-4">
-                <div className="text-3xl mb-2">🎯</div>
-                <p className="text-white font-semibold">Flexible</p>
-                <p className="text-purple-200 text-sm">Choose your lock period</p>
-              </div>
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
-            {vault && vault.active ? (
-              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 sm:p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white">Your Vault</h2>
-                  <span className={`px-4 py-2 rounded-full font-bold text-sm ${
-                    isUnlocked 
-                      ? 'bg-green-400 text-green-900 animate-pulse' 
-                      : 'bg-yellow-400 text-yellow-900'
-                  }`}>
-                    {isUnlocked ? '✓ UNLOCKED' : '🔒 LOCKED'}
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                  <div className="bg-gradient-to-br from-indigo-500/30 to-purple-500/30 rounded-2xl p-5 border border-white/10">
-                    <p className="text-purple-200 text-sm font-medium">Locked Amount</p>
-                    <p className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
-                      {vault.amount} <span className="text-lg text-purple-200">ETH</span>
-                    </p>
-                  </div>
-                  <div className="bg-gradient-to-br from-pink-500/30 to-rose-500/30 rounded-2xl p-5 border border-white/10">
-                    <p className="text-pink-200 text-sm font-medium">Unlock Date</p>
-                    <p className="text-xl font-bold text-white mt-1">
-                      {new Date(vault.unlockTime * 1000).toLocaleDateString()}
-                    </p>
-                    <p className="text-pink-200 text-sm">
-                      {new Date(vault.unlockTime * 1000).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="mb-6">
-                  <div className="flex justify-between text-white text-sm mb-2">
-                    <span>Time Progress</span>
-                    <span>
-                      {vault.unlockTime > 0 
-                        ? Math.min(100, Math.max(0, (1 - (vault.unlockTime * 1000 - Date.now()) / (Number(lockDays) * 86400 * 1000)) * 100)).toFixed(0)
-                        : 0}%
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Vault Card */}
+            <div className="lg:col-span-2 space-y-6">
+              {vault && vault.active ? (
+                <>
+                  {/* Vault Status */}
+                  <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-semibold">Your Vault</h2>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        isUnlocked 
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                          : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                      }`}>
+                        {isUnlocked ? 'Unlocked' : 'Locked'}
                       </span>
-                  </div>
-                  <div className="h-3 bg-white/20 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-violet-500 rounded-full transition-all duration-500"
-                      style={{ width: isUnlocked ? '100%' : '30%' }}
-                    />
-                  </div>
-                </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-[#0d0d14] rounded-xl p-4">
+                        <p className="text-gray-400 text-sm mb-1">Locked Amount</p>
+                        <p className="text-3xl font-bold text-white">{vault.amount}</p>
+                        <p className="text-gray-500 text-sm">ETH</p>
+                      </div>
+                      <div className="bg-[#0d0d14] rounded-xl p-4">
+                        <p className="text-gray-400 text-sm mb-1">Unlock Date</p>
+                        <p className="text-xl font-semibold text-white">
+                          {new Date(vault.unlockTime * 1000).toLocaleDateString()}
+                        </p>
+                        <p className="text-gray-500 text-sm">
+                          {new Date(vault.unlockTime * 1000).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
 
-                <button
-                  onClick={handleWithdraw}
-                  disabled={!isUnlocked || isLoading}
-                  className={`w-full py-4 rounded-2xl font-bold text-lg transition-all transform ${
-                    isUnlocked && !isLoading
-                      ? 'bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
-                      : 'bg-white/20 text-white/50 cursor-not-allowed'
-                  }`}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <span className="animate-spin">⏳</span> Processing...
-                    </span>
-                  ) : isUnlocked ? (
-                    '💰 Withdraw ETH'
-                  ) : (
-                    '🔒 Locked - Wait for unlock'
-                  )}
-                </button>
-              </div>
-            ) : (
-              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 sm:p-8">
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center shadow-lg">
-                    <span className="text-4xl">🚀</span>
+                    {/* Time Remaining */}
+                    {timeRemaining && !isUnlocked && (
+                      <div className="bg-[#0d0d14] rounded-xl p-4 mb-6">
+                        <p className="text-gray-400 text-sm mb-3">Time Remaining</p>
+                        <div className="flex gap-4">
+                          <div className="text-center">
+                            <p className="text-2xl font-bold text-blue-400">{timeRemaining.days}</p>
+                            <p className="text-xs text-gray-500">Days</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-2xl font-bold text-blue-400">{timeRemaining.hours}</p>
+                            <p className="text-xs text-gray-500">Hours</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-2xl font-bold text-blue-400">{timeRemaining.minutes}</p>
+                            <p className="text-xs text-gray-500">Minutes</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Progress Bar */}
+                    <div className="mb-6">
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-gray-400">Progress</span>
+                        <span className="text-gray-400">
+                          {vault.unlockTime > 0 
+                            ? Math.min(100, Math.max(0, (1 - (vault.unlockTime * 1000 - Date.now()) / (Number(lockDays) * 86400 * 1000)) * 100)).toFixed(0)
+                            : 0}%
+                          </span>
+                      </div>
+                      <div className="h-2 bg-[#1a1a2e] rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                          style={{ width: isUnlocked ? '100%' : '30%' }}
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleWithdraw}
+                      disabled={!isUnlocked || isLoading}
+                      className={`w-full py-4 rounded-xl font-semibold transition-all ${
+                        isUnlocked && !isLoading
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'bg-[#1a1a2e] text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      {isLoading ? 'Processing...' : isUnlocked ? 'Withdraw ETH' : 'Locked'}
+                    </button>
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white">Create Your Vault</h2>
-                  <p className="text-purple-200 mt-2">Lock your ETH and earn secure returns</p>
-                </div>
-                
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-white font-semibold mb-3">
-                      💵 Amount (ETH)
-                    </label>
-                    <div className="relative">
+
+                  {/* Transaction History Placeholder */}
+                  <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                    <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No transactions yet</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* Create Vault */
+                <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                  <h2 className="text-xl font-semibold mb-6">Create New Vault</h2>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Amount (ETH)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={depositAmount}
+                          onChange={(e) => setDepositAmount(e.target.value)}
+                          className="w-full px-4 py-3 bg-[#0d0d14] border border-[#1f1f2e] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-600"
+                          placeholder="0.00"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">ETH</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Lock Duration
+                      </label>
+                      <div className="grid grid-cols-4 gap-2 mb-3">
+                        {[7, 14, 30, 90].map((days) => (
+                          <button
+                            key={days}
+                            onClick={() => setLockDays(days.toString())}
+                            className={`py-3 rounded-xl font-medium transition-all ${
+                              lockDays === days.toString()
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-[#0d0d14] text-gray-400 hover:bg-[#1a1a2e]'
+                            }`}
+                          >
+                            {days}D
+                          </button>
+                        ))}
+                      </div>
                       <input
                         type="number"
-                        step="0.01"
-                        min="0"
-                        value={depositAmount}
-                        onChange={(e) => setDepositAmount(e.target.value)}
-                        className="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm"
-                        placeholder="0.00"
+                        min="1"
+                        value={lockDays}
+                        onChange={(e) => setLockDays(e.target.value)}
+                        className="w-full px-4 py-3 bg-[#0d0d14] border border-[#1f1f2e] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-600"
+                        placeholder="Custom days"
                       />
-                      <span className="absolute right-5 top-1/2 -translate-y-1/2 text-white/70 font-bold">ETH</span>
                     </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-white font-semibold mb-3">
-                      📅 Lock Duration (Days)
-                    </label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[1, 7, 30, 90].map((days) => (
-                        <button
-                          key={days}
-                          onClick={() => setLockDays(days.toString())}
-                          className={`py-3 rounded-xl font-bold transition-all ${
-                            lockDays === days.toString()
-                              ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                              : 'bg-white/10 text-white/70 hover:bg-white/20'
-                          }`}
-                        >
-                          {days}D
-                        </button>
-                      ))}
-                    </div>
-                    <input
-                      type="number"
-                      min="1"
-                      value={lockDays}
-                      onChange={(e) => setLockDays(e.target.value)}
-                      className="w-full mt-3 px-5 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500 backdrop-blur-sm"
-                      placeholder="Custom days"
-                    />
-                  </div>
 
-                  <button
-                    onClick={handleDeposit}
-                    disabled={!depositAmount || isLoading}
-                    className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 hover:from-violet-600 hover:via-purple-600 hover:to-fuchsia-600 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  >
-                    {isLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="animate-spin">⏳</span> Processing Transaction...
-                      </span>
-                    ) : (
-                      '🔐 Lock ETH'
-                    )}
-                  </button>
+                    <button
+                      onClick={handleDeposit}
+                      disabled={!depositAmount || isLoading}
+                      className="w-full py-4 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? 'Processing...' : 'Lock ETH'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Stats */}
+              <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                <h3 className="text-lg font-semibold mb-4">Protocol Stats</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Total Value Locked</span>
+                    <span className="font-semibold">$0.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Active Vaults</span>
+                    <span className="font-semibold">0</span>
+                  </div>
                 </div>
               </div>
-            )}
 
-            {/* Info Card */}
-            <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-              <h3 className="text-white font-bold text-lg mb-3">💡 How it works</h3>
-              <ul className="space-y-2 text-purple-100">
-                <li className="flex items-start gap-2">
-                  <span className="text-cyan-400">1.</span>
-                  Deposit your ETH and choose a lock period
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-cyan-400">2.</span>
-                  Your ETH is locked securely in the smart contract
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-cyan-400">3.</span>
-                  After the lock period, withdraw your ETH anytime
-                </li>
-              </ul>
+              {/* How it Works */}
+              <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                <h3 className="text-lg font-semibold mb-4">How it Works</h3>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-400 text-sm">1</span>
+                    </div>
+                    <p className="text-gray-400 text-sm">Deposit ETH and choose lock period</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-400 text-sm">2</span>
+                    </div>
+                    <p className="text-gray-400 text-sm">Your ETH is locked securely</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-400 text-sm">3</span>
+                    </div>
+                    <p className="text-gray-400 text-sm">Withdraw after lock period</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contract Info */}
+              <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                <h3 className="text-lg font-semibold mb-4">Contract</h3>
+                <div className="text-xs text-gray-500 break-all">
+                  <p className="mb-1">Address:</p>
+                  <p className="text-gray-400 font-mono">{CONTRACT_ADDRESS}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
