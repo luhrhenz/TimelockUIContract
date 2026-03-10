@@ -225,7 +225,7 @@ export default function Home() {
               <div className="lg:col-span-3 bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-4">
                 <div className="flex justify-between items-center">
                   <p className="text-yellow-400 text-sm font-mono">
-                    Debug: vaultData = {JSON.stringify(vaultData)}
+                    Debug: Amount={String(vaultData[0])}, UnlockTime={String(vaultData[1])}, Active={String(vaultData[2])}
                   </p>
                   <button 
                     onClick={() => { refetchVault(); refetchTotalVaults(); }}
