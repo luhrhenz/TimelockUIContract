@@ -220,6 +220,23 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Debug: Show vault data */}
+            {isConnected && vaultData && (
+              <div className="lg:col-span-3 bg-yellow-500/20 border border-yellow-500/50 rounded-xl p-4 mb-4">
+                <div className="flex justify-between items-center">
+                  <p className="text-yellow-400 text-sm font-mono">
+                    Debug: vaultData = {JSON.stringify(vaultData)}
+                  </p>
+                  <button 
+                    onClick={() => { refetchVault(); refetchTotalVaults(); }}
+                    className="text-xs bg-yellow-500/30 px-3 py-1 rounded hover:bg-yellow-500/50"
+                  >
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            )}
+            
             {/* Main Vault Card */}
             <div className="lg:col-span-2 space-y-6">
               {vault && vault.active ? (
