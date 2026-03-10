@@ -29,6 +29,14 @@ export default function Home() {
     hash: depositHash,
   });
 
+  const vault = vaultData
+    ? {
+        amount: formatEther(vaultData[0]),
+        unlockTime: Number(vaultData[1]),
+        active: vaultData[2],
+      }
+    : null;
+
   const { isLoading: isWithdrawLoading, isSuccess: isWithdrawSuccess } = useWaitForTransactionReceipt({
     hash: withdrawHash,
   });
@@ -59,14 +67,6 @@ export default function Home() {
       refetchVault();
     }
   }, [isConnected, address, refetchVault]);
-
-  const vault = vaultData
-    ? {
-        amount: formatEther(vaultData[0]),
-        unlockTime: Number(vaultData[1]),
-        active: vaultData[2],
-      }
-    : null;
 
   const handleDeposit = () => {
     if (!depositAmount) return;
