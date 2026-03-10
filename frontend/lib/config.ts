@@ -1,5 +1,6 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { sepolia} from 'wagmi/chains';
+import { rabbyWallet, metaMaskWallet, rainbowWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
 
 // Get WalletConnect project ID from env, or use fallback for build
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID_HERE';
@@ -9,6 +10,12 @@ export const config = getDefaultConfig({
   projectId: projectId,
   chains: [sepolia],
   ssr: false,
+  wallets: [
+    {
+      groupName: 'Popular',
+      wallets: [rabbyWallet, metaMaskWallet, rainbowWallet, walletConnectWallet],
+    },
+  ],
 });
 
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x5FbDB2315678afecb367f032d93F642f64180aa3') as `0x${string}`;

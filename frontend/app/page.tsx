@@ -24,7 +24,7 @@ export default function Home() {
   });
 
   // Read total active vaults count
-  const { data: totalVaultsData } = useReadContract({
+  const { data: totalVaultsData, refetch: refetchTotalVaults } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "totalActiveVaults",
@@ -57,8 +57,9 @@ export default function Home() {
   useEffect(() => {
     if (isDepositSuccess || isWithdrawSuccess) {
       refetchVault();
+      refetchTotalVaults();
     }
-  }, [isDepositSuccess, isWithdrawSuccess, refetchVault]);
+  }, [isDepositSuccess, isWithdrawSuccess, refetchVault, refetchTotalVaults]);
 
   // Store deposit timestamp when vault data loads
   useEffect(() => {
