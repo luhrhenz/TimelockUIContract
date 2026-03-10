@@ -167,7 +167,10 @@ export default function Home() {
               </div>
               <span className="text-xl font-bold">TimeLock</span>
             </div>
-            <ConnectButton />
+            <div className="flex-1 flex justify-center">
+              <ConnectButton />
+            </div>
+            <div className="w-[100px]"></div>
           </div>
         </div>
       </nav>
@@ -404,6 +407,29 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[#1f1f2e] bg-[#0d0d14]/80 backdrop-blur-md mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <span className="text-sm font-semibold">TimeLock</span>
+            </div>
+            <p className="text-xs text-gray-500">
+              Lock your ETH securely. Withdraw only after lock period expires.
+            </p>
+            <div className="flex gap-4">
+              <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Terms</a>
+              <a href="#" className="text-gray-500 hover:text-white text-sm transition-colors">Privacy</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
