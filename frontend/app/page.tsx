@@ -11,6 +11,7 @@ export default function Home() {
   const [depositAmount, setDepositAmount] = useState("");
   const [lockDays, setLockDays] = useState("7");
   const [depositTimestamp, setDepositTimestamp] = useState<number>(0);
+  const [lockPeriodDays, setLockPeriodDays] = useState<number>(7);
 
   const { data: vaultData, refetch: refetchVault } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -81,6 +82,7 @@ export default function Home() {
     if (!depositAmount) return;
     const unlockTime = Math.floor(Date.now() / 1000) + Number(lockDays) * 86400;
     setDepositTimestamp(Math.floor(Date.now() / 1000));
+    setLockPeriodDays(Number(lockDays));
     deposit({
       address: CONTRACT_ADDRESS,
       abi: CONTRACT_ABI,
@@ -115,12 +117,27 @@ export default function Home() {
   // Calculate progress percentage
   const getProgress = () => {
     if (!vault || !vault.active || vault.unlockTime === 0) return 0;
+    
     const currentTime = Math.floor(now / 1000);
-    const totalLockPeriod = vault.unlockTime - depositTimestamp;
-    if (totalLockPeriod <= 0) return 100;
-    const elapsed = currentTime - depositTimestamp;
-    const progress = (elapsed / totalLockPeriod) * 100;
-    return Math.min(100, Math.max(0, progress));
+    const timeRemaining = vault.unlockTime - currentTime;
+    
+    // If already unlocked, show 100%
+    if (timeRemaining <= 0) return 100;
+    
+    // Use the selected lock period for progress calculation
+    const totalSeconds = lockPeriodDays * 24 * 60 * 60;
+    
+    // Calculate elapsed time
+    const elapsed = totalSeconds - timeRemaining;
+    
+    // Return progress as a percentage
+    // If elapsed <= 0, return 0%
+    // If elapsed >= totalSeconds, return 100%
+    if (elapsed <= 0) return 0;
+    if (elapsed >= totalSeconds) return 100;
+    
+    const progress = (elapsed / totalSeconds) * 100;
+    return Math.round(progress * 10) / 10; // Round to 1 decimal place
   };
   const timeRemaining = getTimeRemaining();
 
