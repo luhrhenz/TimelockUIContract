@@ -7,13 +7,17 @@ import { parseEther, formatEther } from "viem";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "@/lib/config";
 
 export default function Home() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
+  
+  // Debug logging
+  console.log('Connection status:', { address, isConnected, chainId, CONTRACT_ADDRESS });
+  
   const [depositAmount, setDepositAmount] = useState("");
   const [lockDays, setLockDays] = useState("7");
   const [depositTimestamp, setDepositTimestamp] = useState<number>(0);
   const [lockPeriodDays, setLockPeriodDays] = useState<number>(7);
 
-  const { data: vaultData, refetch: refetchVault } = useReadContract({
+  const { data: vaultData, refetch: refetchVault, error: vaultError, isError: vaultIsError } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: CONTRACT_ABI,
     functionName: "getVault",
@@ -22,6 +26,9 @@ export default function Home() {
       enabled: !!address,
     },
   });
+
+  // Debug vault data
+  console.log('Vault data:', { vaultData, vaultError, vaultIsError, address });
 
   // Read total active vaults count
   const { data: totalVaultsData, refetch: refetchTotalVaults } = useReadContract({
@@ -178,6 +185,24 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Network Warning */}
+        {chainId && chainId !== 11155111 && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-6">
+            <p className="text-red-400 text-center">
+              Please switch to Sepolia testnet to use this dApp
+            </p>
+          </div>
+        )}
+        
+        {/* Vault Error */}
+        {vaultIsError && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-6">
+            <p className="text-red-400">
+              Error loading vault: {vaultError?.message || 'Unknown error'}
+            </p>
+          </div>
+        )}
+        
         {!isConnected ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <div className="text-center max-w-md">
