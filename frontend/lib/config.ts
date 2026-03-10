@@ -1,5 +1,5 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { sepolia, hardhat } from 'wagmi/chains';
+import { sepolia} from 'wagmi/chains';
 
 // Get WalletConnect project ID from env, or use fallback for build
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID_HERE';
@@ -7,7 +7,7 @@ const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJ
 export const config = getDefaultConfig({
   appName: 'TimeLock Savings',
   projectId: projectId,
-  chains: [hardhat, sepolia],
+  chains: [sepolia],
   ssr: false,
 });
 
