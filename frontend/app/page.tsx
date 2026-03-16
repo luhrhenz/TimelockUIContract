@@ -16,6 +16,25 @@ export default function Home() {
   const [lockDays, setLockDays] = useState("7");
   const [depositTimestamp, setDepositTimestamp] = useState<number>(0);
   const [lockPeriodDays, setLockPeriodDays] = useState<number>(7);
+  const [ethPrice, setEthPrice] = useState<number>(0);
+
+  // Fetch ETH price
+  useEffect(() => {
+    async function fetchEthPrice() {
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await response.json();
+        setEthPrice(data.ethereum?.usd || 0);
+      } catch (error) {
+        console.error('Failed to fetch ETH price:', error);
+        setEthPrice(0);
+      }
+    }
+    fetchEthPrice();
+    // Refresh price every 60 seconds
+    const interval = setInterval(fetchEthPrice, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const { data: vaultData, refetch: refetchVault, error: vaultError, isError: vaultIsError } = useReadContract({
     address: CONTRACT_ADDRESS,
@@ -52,10 +71,16 @@ export default function Home() {
   const vault = vaultData
     ? {
         amount: formatEther(vaultData[0]),
+        amountWei: vaultData[0],
         unlockTime: Number(vaultData[1]),
         active: vaultData[2],
       }
     : null;
+
+  // Calculate vault USD value
+  const vaultUsdValue = vault && vault.amountWei && ethPrice 
+    ? (Number(vault.amount) * ethPrice).toFixed(2) 
+    : '0.00';
 
   const { isLoading: isWithdrawLoading, isSuccess: isWithdrawSuccess } = useWaitForTransactionReceipt({
     hash: withdrawHash,
@@ -162,7 +187,7 @@ export default function Home() {
   const timeRemaining = getTimeRemaining();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       {/* Navigation */}
       <nav className="border-b border-[#1f1f2e] bg-[#0d0d14]/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -183,7 +208,7 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Network Warning */}
         {chainId && chainId !== 11155111 && (
           <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-6">
@@ -389,12 +414,18 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Total Value Locked</span>
-                    <span className="font-semibold">$0.00</span>
+                    <span className="font-semibold">${vault && vault.active ? vaultUsdValue : '0.00'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Active Vaults</span>
                     <span className="font-semibold">{totalActiveVaults}</span>
                   </div>
+                  {vault && vault.active && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Your ETH</span>
+                      <span className="font-semibold">{vault.amount} ETH</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
