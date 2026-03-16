@@ -187,13 +187,13 @@ export default function Home() {
   const timeRemaining = getTimeRemaining();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-blue-500 text-white flex flex-col">
+    <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col grid-bg">
       {/* Navigation */}
-      <nav className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
+      <nav className="glass border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#CCFF00] rounded-lg flex items-center justify-center">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -228,15 +228,17 @@ export default function Home() {
         )}
         
         {!isConnected ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <div className="text-center max-w-md">
-              <div className="w-16 h-16 mx-auto mb-6 bg-[#1a1a2e] rounded-2xl flex items-center justify-center">
-                <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex flex-col items-center justify-center min-h-[70vh]">
+            <div className="text-center max-w-2xl">
+              <div className="w-20 h-20 mx-auto mb-8 glass rounded-2xl flex items-center justify-center animate-glow">
+                <svg className="w-10 h-10 text-[#CCFF00]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h1 className="text-3xl font-bold mb-4">Lock Your ETH</h1>
-              <p className="text-gray-400 mb-8">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                Lock Your <span className="text-[#CCFF00] neon-text">ETH</span>
+              </h1>
+              <p className="text-[#A1A1A1] text-lg mb-8 max-w-lg mx-auto">
                 Secure your Ethereum and earn rewards. Connect your wallet to get started.
               </p>
               <div className="flex justify-center">
@@ -251,7 +253,7 @@ export default function Home() {
               {vault && vault.active ? (
                 <>
                   {/* Vault Status */}
-                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+                  <div className="glass neon-shadow rounded-2xl p-6 inner-glow">
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold">Your Vault</h2>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -284,15 +286,15 @@ export default function Home() {
                         <p className="text-gray-400 text-sm mb-3">Time Remaining</p>
                         <div className="flex gap-4">
                           <div className="text-center">
-                            <p className="text-2xl font-bold text-blue-400">{timeRemaining.days}</p>
+                            <p className="text-2xl font-bold text-[#CCFF00]">{timeRemaining.days}</p>
                             <p className="text-xs text-gray-500">Days</p>
                           </div>
                           <div className="text-center">
-                            <p className="text-2xl font-bold text-blue-400">{timeRemaining.hours}</p>
+                            <p className="text-2xl font-bold text-[#CCFF00]">{timeRemaining.hours}</p>
                             <p className="text-xs text-gray-500">Hours</p>
                           </div>
                           <div className="text-center">
-                            <p className="text-2xl font-bold text-blue-400">{timeRemaining.minutes}</p>
+                            <p className="text-2xl font-bold text-[#CCFF00]">{timeRemaining.minutes}</p>
                             <p className="text-xs text-gray-500">Minutes</p>
                           </div>
                         </div>
@@ -314,7 +316,7 @@ export default function Home() {
                       </div>
                       <div className="h-2 bg-[#1a1a2e] rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                          className="h-full bg-[#CCFF00] rounded-full transition-all duration-500"
                           style={{ width: isUnlocked ? '100%' : `${getProgress()}%` }}
                         />
                       </div>
@@ -325,7 +327,7 @@ export default function Home() {
                       disabled={!isUnlocked || isLoading}
                       className={`w-full py-4 rounded-xl font-semibold transition-all ${
                         isUnlocked && !isLoading
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          ? 'bg-[#CCFF00] hover:bg-[#a3cc00] text-white'
                           : 'bg-[#1a1a2e] text-gray-500 cursor-not-allowed'
                       }`}
                     >
@@ -376,7 +378,7 @@ export default function Home() {
                             onClick={() => setLockDays(days.toString())}
                             className={`py-3 rounded-xl font-medium transition-all ${
                               lockDays === days.toString()
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-[#CCFF00] text-white'
                                 : 'bg-white/5 text-gray-400 hover:bg-[#1a1a2e]'
                             }`}
                           >
@@ -397,7 +399,7 @@ export default function Home() {
                     <button
                       onClick={handleDeposit}
                       disabled={!depositAmount || isLoading}
-                      className="w-full py-4 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-4 rounded-xl font-semibold bg-[#CCFF00] hover:bg-[#a3cc00] text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoading ? 'Processing...' : 'Lock ETH'}
                     </button>
@@ -434,20 +436,20 @@ export default function Home() {
                 <h3 className="text-lg font-semibold mb-4">How it Works</h3>
                 <div className="space-y-4">
                   <div className="flex gap-3">
-                    <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-blue-400 text-sm">1</span>
+                    <div className="w-6 h-6 bg-[#CCFF00]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#CCFF00] text-sm">1</span>
                     </div>
                     <p className="text-gray-400 text-sm">Deposit ETH and earn 100 tokens per ETH</p>
                   </div>
                   <div className="flex gap-3">
-                    <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-blue-400 text-sm">2</span>
+                    <div className="w-6 h-6 bg-[#CCFF00]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#CCFF00] text-sm">2</span>
                     </div>
                     <p className="text-gray-400 text-sm">Your ETH is locked securely</p>
                   </div>
                   <div className="flex gap-3">
-                    <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-blue-400 text-sm">3</span>
+                    <div className="w-6 h-6 bg-[#CCFF00]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#CCFF00] text-sm">3</span>
                     </div>
                     <p className="text-gray-400 text-sm">Withdraw after lock period</p>
                   </div>
@@ -468,11 +470,11 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/20 bg-white/10 backdrop-blur-md mt-auto">
+      <footer className="glass border-t border-white/10 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-blue-600 rounded-md flex items-center justify-center">
+              <div className="w-6 h-6 bg-[#CCFF00] rounded-md flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
