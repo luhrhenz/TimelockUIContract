@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 contract TimelockSavings {
 
     struct Vault {
@@ -11,13 +13,25 @@ contract TimelockSavings {
 
     mapping(address => Vault) public vaults;
     uint256 public totalActiveVaults;
-
-    event Deposited(address user, uint256 amount, uint256 unlockTime);
+    
+    // Reward token
+    IERC20 public rewardToken;
+    uint256 public constant REWARD_RATE = 100; // 1 ETH = 100 tokens
+    
+    event Deposited(address user, uint256 amount, uint256 unlockTime, uint256 rewards);
     event Withdrawn(address user, uint256 amount);
+    event RewardsClaimed(address user, uint256 amount);
+
+    constructor(address _rewardToken) {
+        rewardToken = IERC20(_rewardToken);
+    }
 
     function deposit(uint256 unlockTime) external payable {
         require(msg.value > 0, "Send ETH");
         require(!vaults[msg.sender].active, "Vault active");
+
+        // Calculate rewards (1 ETH = 100 tokens)
+        uint256 rewardAmount = (msg.value * REWARD_RATE) / 1 ether;
 
         vaults[msg.sender] = Vault({
             amount: msg.value,
@@ -27,7 +41,12 @@ contract TimelockSavings {
 
         totalActiveVaults++;
 
-        emit Deposited(msg.sender, msg.value, unlockTime);
+        // Transfer reward tokens to user
+        if (rewardAmount > 0) {
+            require(rewardToken.transfer(msg.sender, rewardAmount), "Reward transfer failed");
+        }
+
+        emit Deposited(msg.sender, msg.value, unlockTime, rewardAmount);
     }
 
     function withdraw() external {
@@ -58,4 +77,7 @@ contract TimelockSavings {
         Vault memory v = vaults[user];
         return (v.amount, v.unlockTime, v.active);
     }
+    
+    // Allow contract to receive ETH
+    receive() external payable {}
 }

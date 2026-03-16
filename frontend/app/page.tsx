@@ -245,13 +245,11 @@ export default function Home() {
                         <p className="text-gray-500 text-sm">ETH</p>
                       </div>
                       <div className="bg-[#0d0d14] rounded-xl p-4">
-                        <p className="text-gray-400 text-sm mb-1">Unlock Date</p>
-                        <p className="text-xl font-semibold text-white">
-                          {new Date(vault.unlockTime * 1000).toLocaleDateString()}
+                        <p className="text-gray-400 text-sm mb-1">Earned Rewards</p>
+                        <p className="text-3xl font-bold text-green-400">
+                          {Number(vault.amount) > 0 ? (Number(vault.amount) * 100).toFixed(2) : '0'}
                         </p>
-                        <p className="text-gray-500 text-sm">
-                          {new Date(vault.unlockTime * 1000).toLocaleTimeString()}
-                        </p>
+                        <p className="text-gray-500 text-sm">Tokens</p>
                       </div>
                     </div>
 
@@ -273,6 +271,9 @@ export default function Home() {
                             <p className="text-xs text-gray-500">Minutes</p>
                           </div>
                         </div>
+                        <p className="text-gray-500 text-sm mt-3">
+                          Unlocks: {new Date(vault.unlockTime * 1000).toLocaleDateString()} at {new Date(vault.unlockTime * 1000).toLocaleTimeString()}
+                        </p>
                       </div>
                     )}
 
@@ -405,7 +406,7 @@ export default function Home() {
                     <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-blue-400 text-sm">1</span>
                     </div>
-                    <p className="text-gray-400 text-sm">Deposit ETH and choose lock period</p>
+                    <p className="text-gray-400 text-sm">Deposit ETH and earn 100 tokens per ETH</p>
                   </div>
                   <div className="flex gap-3">
                     <div className="w-6 h-6 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
