@@ -187,9 +187,9 @@ export default function Home() {
   const timeRemaining = getTimeRemaining();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-blue-500 text-white flex flex-col">
       {/* Navigation */}
-      <nav className="border-b border-[#1f1f2e] bg-[#0d0d14]/80 backdrop-blur-md sticky top-0 z-50">
+      <nav className="border-b border-white/20 bg-white/10 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
@@ -251,7 +251,7 @@ export default function Home() {
               {vault && vault.active ? (
                 <>
                   {/* Vault Status */}
-                  <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-6">
                       <h2 className="text-xl font-semibold">Your Vault</h2>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -264,12 +264,12 @@ export default function Home() {
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-[#0d0d14] rounded-xl p-4">
+                      <div className="bg-white/5 rounded-xl p-4">
                         <p className="text-gray-400 text-sm mb-1">Locked Amount</p>
                         <p className="text-3xl font-bold text-white">{vault.amount}</p>
                         <p className="text-gray-500 text-sm">ETH</p>
                       </div>
-                      <div className="bg-[#0d0d14] rounded-xl p-4">
+                      <div className="bg-white/5 rounded-xl p-4">
                         <p className="text-gray-400 text-sm mb-1">Earned Rewards</p>
                         <p className="text-3xl font-bold text-green-400">
                           {Number(vault.amount) > 0 ? (Number(vault.amount) * 100).toFixed(2) : '0'}
@@ -280,7 +280,7 @@ export default function Home() {
 
                     {/* Time Remaining */}
                     {timeRemaining && !isUnlocked && (
-                      <div className="bg-[#0d0d14] rounded-xl p-4 mb-6">
+                      <div className="bg-white/5 rounded-xl p-4 mb-6">
                         <p className="text-gray-400 text-sm mb-3">Time Remaining</p>
                         <div className="flex gap-4">
                           <div className="text-center">
@@ -334,7 +334,7 @@ export default function Home() {
                   </div>
 
                   {/* Transaction History Placeholder */}
-                  <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                  <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
                     <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
                     <div className="text-center py-8 text-gray-500">
                       <p>No transactions yet</p>
@@ -343,7 +343,7 @@ export default function Home() {
                 </>
               ) : (
                 /* Create Vault */
-                <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+                <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
                   <h2 className="text-xl font-semibold mb-6">Create New Vault</h2>
                   
                   <div className="space-y-6">
@@ -358,7 +358,7 @@ export default function Home() {
                           min="0"
                           value={depositAmount}
                           onChange={(e) => setDepositAmount(e.target.value)}
-                          className="w-full px-4 py-3 bg-[#0d0d14] border border-[#1f1f2e] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-600"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-600"
                           placeholder="0.00"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">ETH</span>
@@ -377,7 +377,7 @@ export default function Home() {
                             className={`py-3 rounded-xl font-medium transition-all ${
                               lockDays === days.toString()
                                 ? 'bg-blue-600 text-white'
-                                : 'bg-[#0d0d14] text-gray-400 hover:bg-[#1a1a2e]'
+                                : 'bg-white/5 text-gray-400 hover:bg-[#1a1a2e]'
                             }`}
                           >
                             {days}D
@@ -389,7 +389,7 @@ export default function Home() {
                         min="1"
                         value={lockDays}
                         onChange={(e) => setLockDays(e.target.value)}
-                        className="w-full px-4 py-3 bg-[#0d0d14] border border-[#1f1f2e] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-600"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-600"
                         placeholder="Custom days"
                       />
                     </div>
@@ -409,7 +409,7 @@ export default function Home() {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Stats */}
-              <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
                 <h3 className="text-lg font-semibold mb-4">Protocol Stats</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between">
@@ -430,7 +430,7 @@ export default function Home() {
               </div>
 
               {/* How it Works */}
-              <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
                 <h3 className="text-lg font-semibold mb-4">How it Works</h3>
                 <div className="space-y-4">
                   <div className="flex gap-3">
@@ -455,7 +455,7 @@ export default function Home() {
               </div>
 
               {/* Contract Info */}
-              <div className="bg-[#111118] border border-[#1f1f2e] rounded-2xl p-6">
+              <div className="bg-white/10 border border-white/20 rounded-2xl p-6">
                 <h3 className="text-lg font-semibold mb-4">Contract</h3>
                 <div className="text-xs text-gray-500 break-all">
                   <p className="mb-1">Address:</p>
@@ -468,7 +468,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#1f1f2e] bg-[#0d0d14]/80 backdrop-blur-md mt-auto">
+      <footer className="border-t border-white/20 bg-white/10 backdrop-blur-md mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
